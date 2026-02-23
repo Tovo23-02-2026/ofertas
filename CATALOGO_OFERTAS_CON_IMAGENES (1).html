@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ofertas Especiales – EDITABLE</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --verde: #1a6b2f;
+    --verde-med: #2e8b47;
+    --verde-claro: #d4edda;
+    --naranja: #e85d04;
+    --naranja-claro: #fff3e0;
+    --amarillo: #ffc107;
+    --crema: #fdf6ec;
+    --blanco: #ffffff;
+    --gris: #f0f0f0;
+    --texto: #1a1a1a;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Nunito',sans-serif; background:var(--crema); color:var(--texto); max-width:480px; margin:0 auto; min-height:100vh; }
+
+  /* ===== PANEL ADMIN ===== */
+  #adminToggle {
+    position:fixed; bottom:20px; right:20px; z-index:9999;
+    background:var(--verde); color:#fff; border:none; border-radius:50px;
+    padding:12px 18px; font-family:'Nunito',sans-serif; font-size:13px;
+    font-weight:800; cursor:pointer; box-shadow:0 4px 20px rgba(0,0,0,0.3);
+    display:flex; align-items:center; gap:7px; letter-spacing:0.5px;
+    transition:background 0.2s, transform 0.15s;
+  }
+  #adminToggle:hover { background:var(--verde-med); transform:scale(1.04); }
+  #adminToggle.active { background:var(--naranja); }
+
+  #adminPanel {
+    display:none; position:fixed; top:0; left:0; right:0; bottom:0; z-index:9998;
+    background:rgba(0,0,0,0.55); backdrop-filter:blur(3px);
+    overflow-y:auto;
+  }
+  #adminPanel.open { display:block; }
+
+  .admin-inner {
+    background:#fff; margin:20px auto; max-width:500px; border-radius:20px;
+    overflow:hidden; box-shadow:0 20px 60px rgba(0,0,0,0.3);
+    min-height:calc(100vh - 40px);
+  }
+
+  .admin-header {
+    background:linear-gradient(135deg,var(--verde),#0d4a1f);
+    padding:20px 22px 16px; color:#fff;
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .admin-header h2 { font-family:'Bebas Neue',sans-serif; font-size:26px; letter-spacing:1px; }
+  .admin-header span { font-size:12px; opacity:0.75; font-weight:600; }
+  #closeAdmin { background:rgba(255,255,255,0.15); border:none; color:#fff;
+    border-radius:50%; width:34px; height:34px; font-size:18px; cursor:pointer;
+    display:flex; align-items:center; justify-content:center; font-weight:800; }
+
+  .admin-tabs { display:flex; border-bottom:2px solid #eee; background:#fafafa; }
+  .admin-tab { flex:1; padding:12px 8px; text-align:center; font-size:12px; font-weight:800;
+    color:#aaa; cursor:pointer; border:none; background:none; letter-spacing:0.5px;
+    text-transform:uppercase; transition:color 0.2s, border-bottom 0.2s;
+    border-bottom:3px solid transparent; margin-bottom:-2px; }
+  .admin-tab.active { color:var(--verde); border-bottom-color:var(--verde); }
+
+  .admin-body { padding:18px; }
+
+  .tab-content { display:none; }
+  .tab-content.active { display:block; }
+
+  /* General fields */
+  .field-group { margin-bottom:16px; }
+  .field-group label { display:block; font-size:11px; font-weight:800; color:#888;
+    text-transform:uppercase; letter-spacing:0.8px; margin-bottom:5px; }
+  .field-group input, .field-group select, .field-group textarea {
+    width:100%; padding:10px 14px; border:1.5px solid #e0e0e0; border-radius:10px;
+    font-family:'Nunito',sans-serif; font-size:14px; font-weight:600;
+    color:var(--texto); background:var(--crema); transition:border-color 0.2s; outline:none; }
+  .field-group input:focus, .field-group select:focus, .field-group textarea:focus {
+    border-color:var(--verde); background:#fff; }
+  .field-group textarea { resize:vertical; min-height:60px; }
+  .field-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+
+  .section-sep { font-family:'Bebas Neue',sans-serif; font-size:18px; color:var(--verde);
+    letter-spacing:1px; margin:20px 0 12px; padding-bottom:6px;
+    border-bottom:2px solid var(--verde-claro); }
+
+  /* Product editor */
+  .prod-card-edit {
+    background:#fafafa; border:1.5px solid #e8e8e8; border-radius:14px;
+    padding:14px; margin-bottom:14px; position:relative;
+  }
+  .prod-card-edit .prod-num {
+    position:absolute; top:-10px; left:14px; background:var(--verde); color:#fff;
+    font-family:'Bebas Neue',sans-serif; font-size:14px; padding:2px 10px;
+    border-radius:20px; letter-spacing:1px;
+  }
+  /* Image upload */
+  .img-upload-area {
+    border:2px dashed #c8e6c9; border-radius:12px; padding:14px 10px;
+    text-align:center; cursor:pointer; background:#f9fff9;
+    transition:border-color 0.2s, background 0.2s; position:relative; overflow:hidden;
+  }
+  .img-upload-area:hover { border-color:var(--verde); background:var(--verde-claro); }
+  .img-upload-area input[type=file] { display:none; }
+  .img-upload-preview { width:100%; height:120px; object-fit:cover; border-radius:8px;
+    display:block; margin-bottom:8px; }
+  .img-upload-label { font-size:12px; font-weight:700; color:var(--verde); cursor:pointer; }
+  .img-upload-icon { font-size:28px; display:block; margin-bottom:4px; }
+  .img-remove-btn { background:#ff4444; color:#fff; border:none; border-radius:8px;
+    padding:4px 12px; font-size:11px; font-weight:800; cursor:pointer; margin-top:6px; }
+  .color-opt { width:26px; height:26px; border-radius:50%; cursor:pointer;
+    border:3px solid transparent; transition:border-color 0.15s; }
+  .color-opt.selected { border-color:#333; }
+
+  /* Apply button */
+  .apply-btn {
+    display:block; width:100%; padding:13px; background:var(--verde); color:#fff;
+    border:none; border-radius:12px; font-family:'Nunito',sans-serif; font-size:15px;
+    font-weight:800; cursor:pointer; margin-top:8px; letter-spacing:0.5px;
+    transition:background 0.2s; }
+  .apply-btn:hover { background:var(--verde-med); }
+  .apply-btn.orange { background:var(--naranja); }
+  .apply-btn.orange:hover { background:#c44d00; }
+
+  .hint { font-size:11px; color:#aaa; font-weight:600; margin-top:4px; }
+
+  /* Color swatches */
+  .swatch-row { display:flex; gap:8px; flex-wrap:wrap; margin-top:6px; }
+  .swatch { width:32px; height:32px; border-radius:8px; cursor:pointer;
+    border:3px solid transparent; transition:border-color 0.15s, transform 0.1s; }
+  .swatch.selected { border-color:#222; transform:scale(1.1); }
+
+  .delete-prod { position:absolute; top:10px; right:10px; background:#ff4444; color:#fff;
+    border:none; border-radius:50%; width:26px; height:26px; font-size:16px;
+    cursor:pointer; display:flex; align-items:center; justify-content:center; font-weight:800; }
+
+  .add-prod-btn { display:block; width:100%; padding:12px; background:var(--amarillo);
+    color:var(--verde); border:none; border-radius:12px; font-family:'Nunito',sans-serif;
+    font-size:14px; font-weight:800; cursor:pointer; text-align:center;
+    margin-top:4px; letter-spacing:0.5px; }
+
+  /* ===== CATALOG STYLES ===== */
+  .header { background:linear-gradient(135deg,var(--verde) 0%,#0d4a1f 100%);
+    padding:0; position:relative; overflow:hidden; }
+  .header::before { content:''; position:absolute; top:-40px; right:-40px;
+    width:160px; height:160px; background:rgba(255,255,255,0.05); border-radius:50%; }
+  .header::after { content:''; position:absolute; bottom:-30px; left:-30px;
+    width:120px; height:120px; background:rgba(255,255,255,0.04); border-radius:50%; }
+  .header-inner { padding:28px 20px 20px; position:relative; z-index:1; }
+  .badge { display:inline-block; background:var(--naranja); color:#fff; font-size:11px;
+    font-weight:800; letter-spacing:1.5px; text-transform:uppercase; padding:4px 12px;
+    border-radius:20px; margin-bottom:10px; }
+  .header h1 { font-family:'Bebas Neue',sans-serif; font-size:48px; color:#fff;
+    line-height:1; letter-spacing:2px; margin-bottom:4px; }
+  .header h1 span { color:var(--amarillo); }
+  .header-sub { color:rgba(255,255,255,0.75); font-size:13px; font-weight:600; }
+  .date-banner { background:var(--naranja); color:#fff; text-align:center;
+    padding:10px 16px; font-size:13px; font-weight:800; letter-spacing:0.5px;
+    display:flex; align-items:center; justify-content:center; gap:8px; }
+  .form-section { background:#fff; margin:16px 14px; border-radius:16px; padding:18px;
+    box-shadow:0 2px 12px rgba(0,0,0,0.07); border-left:4px solid var(--verde); }
+  .form-section h2 { font-size:13px; font-weight:800; color:var(--verde);
+    text-transform:uppercase; letter-spacing:1px; margin-bottom:12px; }
+  .form-row { margin-bottom:10px; }
+  .form-row label { display:block; font-size:11px; font-weight:700; color:#888;
+    text-transform:uppercase; letter-spacing:0.8px; margin-bottom:4px; }
+  .form-row input { width:100%; padding:10px 14px; border:1.5px solid #e0e0e0;
+    border-radius:10px; font-family:'Nunito',sans-serif; font-size:15px; font-weight:600;
+    color:var(--texto); background:var(--crema); transition:border-color 0.2s; outline:none; }
+  .form-row input:focus { border-color:var(--verde); background:#fff; }
+  .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .section-title { padding:6px 14px 10px; display:flex; align-items:center; gap:8px; }
+  .section-title span { font-family:'Bebas Neue',sans-serif; font-size:22px;
+    color:var(--verde); letter-spacing:1px; }
+  .section-title::after { content:''; flex:1; height:2px; background:var(--verde-claro); border-radius:2px; }
+  .products { padding:0 14px; display:flex; flex-direction:column; gap:14px; }
+  .card { background:#fff; border-radius:16px; overflow:hidden;
+    box-shadow:0 2px 14px rgba(0,0,0,0.08); display:flex; flex-direction:column; }
+  .card-img { width:100%; height:170px; object-fit:cover; background:var(--gris);
+    display:flex; align-items:center; justify-content:center; font-size:60px; position:relative; }
+  .card-img img { width:100%; height:100%; object-fit:cover; }
+  .img-placeholder { width:100%; height:170px; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; font-size:52px; position:relative; }
+  .img-placeholder .img-hint { font-size:11px; font-family:'Nunito',sans-serif;
+    font-weight:700; color:rgba(255,255,255,0.7); margin-top:6px; letter-spacing:0.5px; }
+  .num-badge { position:absolute; top:10px; left:10px; background:var(--verde); color:#fff;
+    font-family:'Bebas Neue',sans-serif; font-size:16px; width:30px; height:30px;
+    border-radius:50%; display:flex; align-items:center; justify-content:center;
+    box-shadow:0 2px 6px rgba(0,0,0,0.25); }
+  .oferta-badge { position:absolute; top:10px; right:10px; background:var(--naranja);
+    color:#fff; font-size:10px; font-weight:800; letter-spacing:1px; padding:3px 10px;
+    border-radius:20px; text-transform:uppercase; }
+  .card-body { padding:14px 16px 16px; }
+  .card-body h3 { font-size:16px; font-weight:900; color:var(--texto); line-height:1.2; margin-bottom:4px; }
+  .card-pres { font-size:12px; font-weight:600; color:#888; margin-bottom:12px; }
+  .card-bottom { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+  .price { display:flex; flex-direction:column; }
+  .price-label { font-size:10px; font-weight:700; color:#aaa; text-transform:uppercase; letter-spacing:0.8px; }
+  .price-val { font-family:'Bebas Neue',sans-serif; font-size:30px; color:var(--verde); line-height:1; letter-spacing:1px; }
+  .price-val span { font-size:18px; }
+  .qty-wrap { display:flex; flex-direction:column; align-items:flex-end; gap:4px; }
+  .qty-label { font-size:10px; font-weight:700; color:#aaa; text-transform:uppercase; letter-spacing:0.8px; }
+  .qty-control { display:flex; align-items:center; gap:0; border:2px solid var(--amarillo);
+    border-radius:12px; overflow:hidden; background:var(--naranja-claro); }
+  .qty-btn { width:36px; height:36px; background:var(--amarillo); border:none; font-size:20px;
+    font-weight:900; color:var(--verde); cursor:pointer; display:flex;
+    align-items:center; justify-content:center; transition:background 0.15s; line-height:1; }
+  .qty-btn:active { background:#f0a800; }
+  .qty-input { width:44px; text-align:center; border:none; background:transparent;
+    font-family:'Bebas Neue',sans-serif; font-size:22px; color:var(--texto); outline:none; padding:0 4px; }
+  .total-section { margin:20px 14px; background:var(--verde); border-radius:18px;
+    padding:20px; color:#fff; box-shadow:0 4px 20px rgba(26,107,47,0.35); }
+  .total-section h3 { font-size:13px; font-weight:700; letter-spacing:1px;
+    text-transform:uppercase; opacity:0.8; margin-bottom:6px; }
+  .total-num { font-family:'Bebas Neue',sans-serif; font-size:50px; line-height:1;
+    letter-spacing:2px; color:var(--amarillo); }
+  .total-num span { font-size:30px; }
+  .total-sub { font-size:12px; opacity:0.7; margin-top:6px; }
+  .send-btn { display:block; width:calc(100% - 28px); margin:0 14px 10px;
+    background:#25D366; color:#fff; border:none; border-radius:14px; padding:16px;
+    font-family:'Nunito',sans-serif; font-size:16px; font-weight:800; cursor:pointer;
+    text-align:center; letter-spacing:0.5px; box-shadow:0 4px 16px rgba(37,211,102,0.4); }
+  .send-btn:active { transform:scale(0.97); }
+  .footer { text-align:center; padding:16px 20px 80px; font-size:12px; color:#aaa; font-weight:600; }
+  .footer strong { color:var(--verde); }
+  .instruccion { background:var(--naranja-claro); border-left:4px solid var(--naranja);
+    margin:0 14px 16px; padding:12px 14px; border-radius:0 12px 12px 0; font-size:13px;
+    font-weight:700; color:#7f3800; line-height:1.4; }
+
+  /* Color palettes for placeholders */
+  .bg-mayo   { background:linear-gradient(135deg,#e8f5e9,#c8e6c9); color:#2e7d32; }
+  .bg-mostaza{ background:linear-gradient(135deg,#fff9c4,#f9e07a); color:#f57f17; }
+  .bg-ketchup{ background:linear-gradient(135deg,#ffebee,#ef9a9a); color:#b71c1c; }
+  .bg-papas  { background:linear-gradient(135deg,#fff3e0,#ffcc80); color:#e65100; }
+  .bg-salsa  { background:linear-gradient(135deg,#f3e5f5,#ce93d8); color:#6a1b9a; }
+  .bg-mani   { background:linear-gradient(135deg,#fbe9e7,#ffab91); color:#bf360c; }
+  .bg-verde  { background:linear-gradient(135deg,#e8f5e9,#a5d6a7); color:#1b5e20; }
+  .bg-azul   { background:linear-gradient(135deg,#e3f2fd,#90caf9); color:#0d47a1; }
+  .bg-gris   { background:linear-gradient(135deg,#f5f5f5,#e0e0e0); color:#424242; }
+
+  .notice { background:#e8f5e9; border:1.5px solid var(--verde-claro); border-radius:10px;
+    padding:10px 14px; font-size:12px; color:#2e7d32; font-weight:700; margin-bottom:14px; }
+</style>
+</head>
+<body>
+
+<!-- ======= CATALOG ======= -->
+<div id="catalogView">
+
+<div class="header">
+  <div class="header-inner">
+    <div class="badge" id="cat-badge">🔥 Oferta Limitada</div>
+    <h1 id="cat-title1">OFERTAS<br><span id="cat-title2">ESPECIALES</span></h1>
+    <div class="header-sub" id="cat-subtitle">Precios mayoristas · IVA incluido</div>
+  </div>
+  <div class="date-banner" id="cat-datebanner">
+    📅 &nbsp;23 FEB — 28 FEB 2026 &nbsp;·&nbsp; o hasta agotar stock
+  </div>
+</div>
+
+<div class="form-section">
+  <h2>📋 Tus datos para el pedido</h2>
+  <div class="form-row">
+    <label>Apellido y Nombre</label>
+    <input type="text" id="nombre" placeholder="Ej: García, Juan">
+  </div>
+  <div class="form-row">
+    <label>Dirección de entrega</label>
+    <input type="text" id="direccion" placeholder="Calle, número, localidad">
+  </div>
+  <div class="form-grid">
+    <div class="form-row">
+      <label>Teléfono</label>
+      <input type="tel" id="telefono" placeholder="Ej: 351-1234567">
+    </div>
+    <div class="form-row">
+      <label>Fecha</label>
+      <input type="text" id="fecha" value="23/02/2026" readonly style="background:#f0f0f0;color:#888;">
+    </div>
+  </div>
+</div>
+
+<div class="instruccion" id="cat-instruccion">
+  👆 Elegí la cantidad de cada producto y tocá <strong>Enviar Pedido</strong> al final
+</div>
+
+<div class="section-title">
+  <span id="cat-sectiontitle">PRODUCTOS EN OFERTA</span>
+</div>
+
+<div class="products" id="products"></div>
+
+<div class="total-section">
+  <h3 id="cat-totallabel">💰 Total de tu pedido</h3>
+  <div class="total-num" id="totalDisplay"><span>$</span>0</div>
+  <div class="total-sub" id="cat-totalsub">IVA incluido · Precios sujetos a stock disponible</div>
+</div>
+
+<button class="send-btn" onclick="enviarPedido()" id="cat-sendbtn">
+  📲 &nbsp;Enviar Pedido por WhatsApp
+</button>
+
+<div class="footer">
+  <strong id="cat-footer1">Ofertas válidas hasta el 28/02/2026</strong><br>
+  <span id="cat-footer2">Precios mayoristas · Sujeto a disponibilidad de stock</span>
+</div>
+
+</div><!-- /catalogView -->
+
+<!-- ======= ADMIN TOGGLE ======= -->
+<button id="adminToggle" onclick="toggleAdmin()">⚙️ Editar Catálogo</button>
+
+<!-- ======= ADMIN PANEL ======= -->
+<div id="adminPanel">
+  <div class="admin-inner">
+    <div class="admin-header">
+      <div>
+        <h2>✏️ Editor de Catálogo</h2>
+        <span>Todos los cambios se aplican al instante</span>
+      </div>
+      <button id="closeAdmin" onclick="toggleAdmin()">✕</button>
+    </div>
+
+    <div class="admin-tabs">
+      <button class="admin-tab active" onclick="showTab('tab-general')">🏠 General</button>
+      <button class="admin-tab" onclick="showTab('tab-products')">📦 Productos</button>
+      <button class="admin-tab" onclick="showTab('tab-textos')">📝 Textos</button>
+      <button class="admin-tab" onclick="showTab('tab-colores')">🎨 Colores</button>
+    </div>
+
+    <div class="admin-body">
+
+      <!-- TAB GENERAL -->
+      <div class="tab-content active" id="tab-general">
+        <div class="notice">✅ Los cambios se aplican automáticamente al escribir o al hacer clic en "Aplicar"</div>
+
+        <div class="section-sep">🗓️ Fechas y Datos</div>
+        <div class="field-group">
+          <label>Título principal (línea 1)</label>
+          <input type="text" id="e-title1" value="OFERTAS" oninput="applyGeneral()">
+        </div>
+        <div class="field-group">
+          <label>Título principal (línea 2 – en amarillo)</label>
+          <input type="text" id="e-title2" value="ESPECIALES" oninput="applyGeneral()">
+        </div>
+        <div class="field-group">
+          <label>Subtítulo del header</label>
+          <input type="text" id="e-subtitle" value="Precios mayoristas · IVA incluido" oninput="applyGeneral()">
+        </div>
+        <div class="field-group">
+          <label>Texto del badge (ej: 🔥 Oferta Limitada)</label>
+          <input type="text" id="e-badge" value="🔥 Oferta Limitada" oninput="applyGeneral()">
+        </div>
+        <div class="field-group">
+          <label>Banner de fechas (barra naranja)</label>
+          <input type="text" id="e-datebanner" value="📅  23 FEB — 28 FEB 2026  ·  o hasta agotar stock" oninput="applyGeneral()">
+        </div>
+        <div class="field-group">
+          <label>Instrucción para el cliente</label>
+          <textarea id="e-instruccion" oninput="applyGeneral()">👆 Elegí la cantidad de cada producto y tocá Enviar Pedido al final</textarea>
+        </div>
+
+        <div class="section-sep">📱 WhatsApp</div>
+        <div class="field-group">
+          <label>Número de WhatsApp (solo números con código país)</label>
+          <input type="tel" id="e-waphone" value="" placeholder="Ej: 5493511234567">
+          <p class="hint">Dejalo vacío para que el cliente elija el contacto. Con número va directo a tu chat.</p>
+        </div>
+        <div class="field-group">
+          <label>Texto del botón WhatsApp</label>
+          <input type="text" id="e-sendbtn" value="📲  Enviar Pedido por WhatsApp" oninput="applyGeneral()">
+        </div>
+
+        <div class="section-sep">📄 Pie de página</div>
+        <div class="field-group">
+          <label>Texto footer línea 1 (en verde)</label>
+          <input type="text" id="e-footer1" value="Ofertas válidas hasta el 28/02/2026" oninput="applyGeneral()">
+        </div>
+        <div class="field-group">
+          <label>Texto footer línea 2</label>
+          <input type="text" id="e-footer2" value="Precios mayoristas · Sujeto a disponibilidad de stock" oninput="applyGeneral()">
+        </div>
+        <div class="field-group">
+          <label>Texto total – subtítulo</label>
+          <input type="text" id="e-totalsub" value="IVA incluido · Precios sujetos a stock disponible" oninput="applyGeneral()">
+        </div>
+
+        <button class="apply-btn" onclick="applyGeneral()">✅ Aplicar cambios generales</button>
+      </div>
+
+      <!-- TAB PRODUCTS -->
+      <div class="tab-content" id="tab-products">
+        <div class="notice">✅ Editá cada producto. Podés agregar o eliminar productos.</div>
+        <div id="productsEditor"></div>
+        <button class="add-prod-btn" onclick="addProduct()">➕ Agregar nuevo producto</button>
+        <br>
+        <button class="apply-btn" style="margin-top:12px;" onclick="renderCatalog()">✅ Aplicar cambios de productos</button>
+      </div>
+
+      <!-- TAB TEXTOS -->
+      <div class="tab-content" id="tab-textos">
+        <div class="notice">✅ Personalizá todos los textos del catálogo</div>
+
+        <div class="section-sep">📋 Sección de datos del cliente</div>
+        <div class="field-group">
+          <label>Título del formulario</label>
+          <input type="text" id="e-formtitle" value="📋 Tus datos para el pedido" oninput="applyTextos()">
+        </div>
+        <div class="field-group">
+          <label>Título sección productos</label>
+          <input type="text" id="e-sectiontitle" value="PRODUCTOS EN OFERTA" oninput="applyTextos()">
+        </div>
+        <div class="field-group">
+          <label>Título del total</label>
+          <input type="text" id="e-totallabel" value="💰 Total de tu pedido" oninput="applyTextos()">
+        </div>
+        <div class="field-group">
+          <label>Encabezado del pedido en WhatsApp</label>
+          <input type="text" id="e-waheader" value="🛒 *PEDIDO - OFERTAS ESPECIALES*">
+        </div>
+
+        <button class="apply-btn" onclick="applyTextos()">✅ Aplicar textos</button>
+      </div>
+
+      <!-- TAB COLORES -->
+      <div class="tab-content" id="tab-colores">
+        <div class="notice">✅ Cambiá los colores principales del catálogo</div>
+
+        <div class="field-group">
+          <label>Color Verde Principal</label>
+          <input type="color" id="c-verde" value="#1a6b2f" oninput="applyColores()">
+        </div>
+        <div class="field-group">
+          <label>Color Verde Medio</label>
+          <input type="color" id="c-verde-med" value="#2e8b47" oninput="applyColores()">
+        </div>
+        <div class="field-group">
+          <label>Color Naranja (badges, banner, botones)</label>
+          <input type="color" id="c-naranja" value="#e85d04" oninput="applyColores()">
+        </div>
+        <div class="field-group">
+          <label>Color Amarillo (controles de cantidad)</label>
+          <input type="color" id="c-amarillo" value="#ffc107" oninput="applyColores()">
+        </div>
+        <div class="field-group">
+          <label>Color fondo general (crema)</label>
+          <input type="color" id="c-crema" value="#fdf6ec" oninput="applyColores()">
+        </div>
+
+        <button class="apply-btn" onclick="applyColores()">✅ Aplicar colores</button>
+        <button class="apply-btn orange" style="margin-top:8px;" onclick="resetColores()">↺ Restaurar colores originales</button>
+      </div>
+
+    </div><!-- /admin-body -->
+  </div><!-- /admin-inner -->
+</div><!-- /adminPanel -->
+
+<script>
+// =====================
+// DATA
+// =====================
+let catalogData = {
+  waPhone: '',
+  products: [
+    { id:1, name:'MAYONESA NATURA X 125 GRS.', pres:'📦 Caja x 12 Uds.', precio:487.24, precioDisplay:'487', emoji:'🥛', hint:'MAYONESA', bg:'bg-mayo', badge:'OFERTA' },
+    { id:2, name:'MAYONESA NATURA X 250 GRS.', pres:'📦 Caja x 12 Uds.', precio:1135.68, precioDisplay:'1.135', emoji:'🥛', hint:'MAYONESA', bg:'bg-mayo', badge:'OFERTA' },
+    { id:3, name:'MOSTAZA NATURA X 250 GRS.', pres:'📦 Caja x 12 Uds.', precio:738.68, precioDisplay:'738', emoji:'🌿', hint:'MOSTAZA', bg:'bg-mostaza', badge:'OFERTA' },
+    { id:4, name:'KETCHUP NATURA X 250 GRS.', pres:'📦 Caja x 12 Uds.', precio:1214, precioDisplay:'1.214', emoji:'🍅', hint:'KETCHUP', bg:'bg-ketchup', badge:'OFERTA' },
+    { id:5, name:'PAPAS FRITAS KETCHUP BARBACOA NIKITOS X 65G', pres:'🛍️ Unidad', precio:932, precioDisplay:'932', emoji:'🥔', hint:'PAPAS FRITAS', bg:'bg-papas', badge:'OFERTA' },
+    { id:6, name:'SALSA GOL NATURA X 250 GRS.', pres:'📦 Caja x 12 Uds.', precio:1277, precioDisplay:'1.277', emoji:'⚽', hint:'SALSA GOL', bg:'bg-salsa', badge:'OFERTA' },
+    { id:7, name:'MANÍ CROCANTE TERRANEA CHEDDAR X 200G', pres:'📦 Caja x 12 Uds.', precio:999, precioDisplay:'999', emoji:'🥜', hint:'MANÍ CHEDDAR', bg:'bg-mani', badge:'OFERTA' },
+    { id:8, name:'MANÍ CROCANTE TERRANEA JAMÓN X 200G', pres:'📦 Caja x 12 Uds.', precio:999, precioDisplay:'999', emoji:'🥜', hint:'MANÍ JAMÓN', bg:'bg-mani', badge:'OFERTA' }
+  ]
+};
+
+const BG_OPTIONS = [
+  {key:'bg-mayo',   label:'Verde claro'},
+  {key:'bg-mostaza',label:'Amarillo'},
+  {key:'bg-ketchup',label:'Rojo'},
+  {key:'bg-papas',  label:'Naranja'},
+  {key:'bg-salsa',  label:'Violeta'},
+  {key:'bg-mani',   label:'Salmón'},
+  {key:'bg-verde',  label:'Verde'},
+  {key:'bg-azul',   label:'Azul'},
+  {key:'bg-gris',   label:'Gris'},
+];
+
+const EMOJI_OPTIONS = ['🥛','🌿','🍅','🥔','⚽','🥜','🧀','🍖','🧂','🛢️','🍯','🥫','🌶️','🧄','🥦','🍋','🍫','☕','🥤','🍾'];
+
+// =====================
+// RENDER CATALOG
+// =====================
+function renderCatalog() {
+  const container = document.getElementById('products');
+  container.innerHTML = '';
+  catalogData.products.forEach((p, idx) => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    const imgContent = p.imageData
+      ? `<img src="${p.imageData}" alt="${p.name}" style="width:100%;height:100%;object-fit:cover;border-radius:0;">`
+      : `<span style="font-size:52px;">${p.emoji || '🛒'}</span><span class="img-hint">${p.hint}</span>`;
+    card.innerHTML = `
+      <div class="img-placeholder ${p.bg}" style="${p.imageData ? 'padding:0;overflow:hidden;' : ''}">
+        ${imgContent}
+        <div class="num-badge">${idx+1}</div>
+        <div class="oferta-badge">${p.badge || 'OFERTA'}</div>
+      </div>
+      <div class="card-body">
+        <h3>${p.name}</h3>
+        <div class="card-pres">${p.pres}</div>
+        <div class="card-bottom">
+          <div class="price">
+            <span class="price-label">Precio unit. c/IVA</span>
+            <span class="price-val"><span>$</span>${p.precioDisplay}</span>
+          </div>
+          <div class="qty-wrap">
+            <span class="qty-label">Cantidad</span>
+            <div class="qty-control">
+              <button class="qty-btn" onclick="cambiar(this,-1)">−</button>
+              <input class="qty-input" type="number" value="0" min="0" data-precio="${p.precio}" onchange="actualizarTotal()">
+              <button class="qty-btn" onclick="cambiar(this,1)">+</button>
+            </div>
+          </div>
+        </div>
+      </div>`;
+    container.appendChild(card);
+  });
+  actualizarTotal();
+}
+
+// =====================
+// RENDER PRODUCT EDITOR
+// =====================
+function renderProductEditor() {
+  const container = document.getElementById('productsEditor');
+  container.innerHTML = '';
+  catalogData.products.forEach((p, idx) => {
+    const div = document.createElement('div');
+    div.className = 'prod-card-edit';
+    div.id = `pedit-${p.id}`;
+
+    // Image upload section
+    const hasImage = !!p.imageData;
+    const imgUploadHtml = `
+      <div class="field-group">
+        <label>Imagen del producto</label>
+        <div class="img-upload-area" id="upload-area-${p.id}" onclick="document.getElementById('file-input-${p.id}').click()">
+          <input type="file" id="file-input-${p.id}" accept="image/*" onchange="handleImageUpload(${p.id}, this)">
+          ${hasImage
+            ? `<img src="${p.imageData}" class="img-upload-preview" id="img-preview-${p.id}">
+               <span class="img-upload-label">📷 Cambiar imagen</span>
+               <br><button class="img-remove-btn" onclick="event.stopPropagation();removeImage(${p.id})">✕ Quitar imagen</button>`
+            : `<span class="img-upload-icon">📷</span>
+               <span class="img-upload-label">Tocar para cargar imagen desde archivo</span>
+               <p class="hint">JPG, PNG, WEBP · se muestra en la tarjeta</p>`
+          }
+        </div>
+      </div>
+    `;
+
+    // BG picker
+    let bgHtml = BG_OPTIONS.map(b => {
+      const colorMap = {
+        'bg-mayo':'#a5d6a7','bg-mostaza':'#f9e07a','bg-ketchup':'#ef9a9a',
+        'bg-papas':'#ffcc80','bg-salsa':'#ce93d8','bg-mani':'#ffab91',
+        'bg-verde':'#81c784','bg-azul':'#90caf9','bg-gris':'#e0e0e0'
+      };
+      return `<div class="swatch ${b.key===p.bg?'selected':''}" style="background:${colorMap[b.key]}" title="${b.label}" onclick="setBg(${p.id},'${b.key}',this)"></div>`;
+    }).join('');
+
+    div.innerHTML = `
+      <div class="prod-num">Producto ${idx+1}</div>
+      <button class="delete-prod" onclick="deleteProduct(${p.id})" title="Eliminar">✕</button>
+      <br>
+      <div class="field-group" style="margin-top:8px;">
+        <label>Nombre del producto</label>
+        <input type="text" value="${p.name}" oninput="updateField(${p.id},'name',this.value)">
+      </div>
+      <div class="field-row">
+        <div class="field-group">
+          <label>Precio exacto (para cálculo)</label>
+          <input type="number" step="0.01" value="${p.precio}" oninput="updateField(${p.id},'precio',parseFloat(this.value)||0)">
+        </div>
+        <div class="field-group">
+          <label>Precio a mostrar (ej: 1.135)</label>
+          <input type="text" value="${p.precioDisplay}" oninput="updateField(${p.id},'precioDisplay',this.value)">
+        </div>
+      </div>
+      <div class="field-group">
+        <label>Presentación (ej: 📦 Caja x 12 Uds.)</label>
+        <input type="text" value="${p.pres}" oninput="updateField(${p.id},'pres',this.value)">
+      </div>
+      <div class="field-group">
+        <label>Etiqueta del badge (ej: OFERTA, NUEVO, PROMO)</label>
+        <input type="text" value="${p.badge||'OFERTA'}" oninput="updateField(${p.id},'badge',this.value)">
+      </div>
+      <div class="field-group">
+        <label>Texto de pista en imagen (hint)</label>
+        <input type="text" value="${p.hint}" oninput="updateField(${p.id},'hint',this.value)">
+      </div>
+      ${imgUploadHtml}
+      <div class="field-group">
+        <label>Color de fondo (si no hay imagen)</label>
+        <div class="swatch-row">${bgHtml}</div>
+      </div>
+    `;
+    container.appendChild(div);
+  });
+}
+
+function updateField(id, field, value) {
+  const p = catalogData.products.find(x => x.id === id);
+  if (p) { p[field] = value; renderCatalog(); }
+}
+function handleImageUpload(id, input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const p = catalogData.products.find(x => x.id === id);
+    if (!p) return;
+    p.imageData = e.target.result;
+    renderCatalog();
+    renderProductEditor();
+    // scroll back to this product
+    setTimeout(() => {
+      const el = document.getElementById(`pedit-${id}`);
+      if (el) el.scrollIntoView({behavior:'smooth', block:'nearest'});
+    }, 100);
+  };
+  reader.readAsDataURL(file);
+}
+function removeImage(id) {
+  const p = catalogData.products.find(x => x.id === id);
+  if (!p) return;
+  delete p.imageData;
+  renderCatalog();
+  renderProductEditor();
+}
+function setBg(id, bg, el) {
+  const p = catalogData.products.find(x => x.id === id);
+  if (!p) return;
+  p.bg = bg;
+  el.closest('.swatch-row').querySelectorAll('.swatch').forEach(e => e.classList.remove('selected'));
+  el.classList.add('selected');
+  renderCatalog();
+}
+function deleteProduct(id) {
+  if (!confirm('¿Eliminar este producto?')) return;
+  catalogData.products = catalogData.products.filter(x => x.id !== id);
+  renderProductEditor();
+  renderCatalog();
+}
+function addProduct() {
+  const newId = Date.now();
+  catalogData.products.push({
+    id: newId, name:'NUEVO PRODUCTO', pres:'📦 Caja x 12 Uds.', precio:0,
+    precioDisplay:'0', emoji:'🛒', hint:'PRODUCTO', bg:'bg-mayo', badge:'OFERTA'
+  });
+  renderProductEditor();
+  renderCatalog();
+  // scroll to new product
+  setTimeout(() => {
+    const el = document.getElementById(`pedit-${newId}`);
+    if (el) el.scrollIntoView({behavior:'smooth'});
+  }, 100);
+}
+
+// =====================
+// APPLY GENERAL
+// =====================
+function applyGeneral() {
+  document.getElementById('cat-title1').childNodes[0].nodeValue = document.getElementById('e-title1').value + '\n';
+  document.getElementById('cat-title2').textContent = document.getElementById('e-title2').value;
+  document.getElementById('cat-subtitle').textContent = document.getElementById('e-subtitle').value;
+  document.getElementById('cat-badge').textContent = document.getElementById('e-badge').value;
+  document.getElementById('cat-datebanner').innerHTML = '📅 &nbsp;' + document.getElementById('e-datebanner').value;
+  document.getElementById('cat-instruccion').innerHTML = document.getElementById('e-instruccion').value;
+  document.getElementById('cat-sendbtn').textContent = document.getElementById('e-sendbtn').value;
+  document.getElementById('cat-footer1').textContent = document.getElementById('e-footer1').value;
+  document.getElementById('cat-footer2').textContent = document.getElementById('e-footer2').value;
+  document.getElementById('cat-totalsub').textContent = document.getElementById('e-totalsub').value;
+  catalogData.waPhone = document.getElementById('e-waphone').value.trim();
+}
+
+// =====================
+// APPLY TEXTOS
+// =====================
+function applyTextos() {
+  document.querySelector('.form-section h2').textContent = document.getElementById('e-formtitle').value;
+  document.getElementById('cat-sectiontitle').textContent = document.getElementById('e-sectiontitle').value;
+  document.getElementById('cat-totallabel').textContent = document.getElementById('e-totallabel').value;
+}
+
+// =====================
+// APPLY COLORES
+// =====================
+function applyColores() {
+  const root = document.documentElement;
+  root.style.setProperty('--verde', document.getElementById('c-verde').value);
+  root.style.setProperty('--verde-med', document.getElementById('c-verde-med').value);
+  root.style.setProperty('--naranja', document.getElementById('c-naranja').value);
+  root.style.setProperty('--amarillo', document.getElementById('c-amarillo').value);
+  root.style.setProperty('--crema', document.getElementById('c-crema').value);
+}
+function resetColores() {
+  document.getElementById('c-verde').value = '#1a6b2f';
+  document.getElementById('c-verde-med').value = '#2e8b47';
+  document.getElementById('c-naranja').value = '#e85d04';
+  document.getElementById('c-amarillo').value = '#ffc107';
+  document.getElementById('c-crema').value = '#fdf6ec';
+  applyColores();
+}
+
+// =====================
+// TABS
+// =====================
+function showTab(tabId) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(tabId).classList.add('active');
+  event.target.classList.add('active');
+  if (tabId === 'tab-products') renderProductEditor();
+}
+
+// =====================
+// TOGGLE ADMIN
+// =====================
+function toggleAdmin() {
+  const panel = document.getElementById('adminPanel');
+  const btn = document.getElementById('adminToggle');
+  panel.classList.toggle('open');
+  btn.classList.toggle('active');
+  if (panel.classList.contains('open')) {
+    btn.textContent = '✕ Cerrar editor';
+    renderProductEditor();
+  } else {
+    btn.innerHTML = '⚙️ Editar Catálogo';
+  }
+}
+
+// =====================
+// CATALOG FUNCTIONS
+// =====================
+function cambiar(btn, delta) {
+  const input = btn.parentElement.querySelector('.qty-input');
+  input.value = Math.max(0, (parseInt(input.value) || 0) + delta);
+  actualizarTotal();
+}
+function actualizarTotal() {
+  let total = 0;
+  document.querySelectorAll('.qty-input').forEach(inp => {
+    total += (parseInt(inp.value)||0) * (parseFloat(inp.dataset.precio)||0);
+  });
+  document.getElementById('totalDisplay').innerHTML = '<span>$</span>' + Math.round(total).toLocaleString('es-AR');
+}
+function enviarPedido() {
+  const nombre = document.getElementById('nombre').value.trim();
+  const direccion = document.getElementById('direccion').value.trim();
+  const telefono = document.getElementById('telefono').value.trim();
+  if (!nombre) { alert('Por favor ingresá tu nombre para continuar.'); return; }
+
+  const inputs = document.querySelectorAll('.qty-input');
+  const cards = document.querySelectorAll('#products .card');
+  let lineas = [], total = 0;
+  inputs.forEach((inp, i) => {
+    const qty = parseInt(inp.value) || 0;
+    if (qty > 0) {
+      const p = catalogData.products[i];
+      const sub = qty * p.precio;
+      total += sub;
+      lineas.push(`• ${p.name} x${qty} = $${Math.round(sub).toLocaleString('es-AR')}`);
+    }
+  });
+  if (!lineas.length) { alert('Seleccioná al menos un producto para hacer el pedido.'); return; }
+
+  const waHeader = document.getElementById('e-waheader') ? document.getElementById('e-waheader').value : '🛒 *PEDIDO - OFERTAS ESPECIALES*';
+  const banner = document.getElementById('e-datebanner').value;
+
+  let msg = `${waHeader}\n📅 ${banner}\n\n👤 *Nombre:* ${nombre}\n`;
+  if (direccion) msg += `📍 *Entrega:* ${direccion}\n`;
+  if (telefono)  msg += `📞 *Tel:* ${telefono}\n`;
+  msg += `\n*DETALLE DEL PEDIDO:*\n${lineas.join('\n')}\n\n💰 *TOTAL: $${Math.round(total).toLocaleString('es-AR')}* (IVA incl.)`;
+
+  const encoded = encodeURIComponent(msg);
+  const phone = catalogData.waPhone ? catalogData.waPhone : '';
+  window.open(`https://wa.me/${phone}?text=${encoded}`, '_blank');
+}
+
+// INIT
+renderCatalog();
+</script>
+</body>
+</html>
