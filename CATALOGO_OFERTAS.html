@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ofertas Especiales</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --verde: #1a6b2f;
+    --verde-med: #2e8b47;
+    --verde-claro: #d4edda;
+    --naranja: #e85d04;
+    --naranja-claro: #fff3e0;
+    --amarillo: #ffc107;
+    --crema: #fdf6ec;
+    --blanco: #ffffff;
+    --gris: #f0f0f0;
+    --texto: #1a1a1a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--crema);
+    color: var(--texto);
+    max-width: 480px;
+    margin: 0 auto;
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  .header {
+    background: linear-gradient(135deg, var(--verde) 0%, #0d4a1f 100%);
+    padding: 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 160px; height: 160px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 50%;
+  }
+  .header::after {
+    content: '';
+    position: absolute;
+    bottom: -30px; left: -30px;
+    width: 120px; height: 120px;
+    background: rgba(255,255,255,0.04);
+    border-radius: 50%;
+  }
+
+  .header-inner {
+    padding: 28px 20px 20px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .badge {
+    display: inline-block;
+    background: var(--naranja);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin-bottom: 10px;
+  }
+
+  .header h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 48px;
+    color: #fff;
+    line-height: 1;
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+  }
+
+  .header h1 span {
+    color: var(--amarillo);
+  }
+
+  .header-sub {
+    color: rgba(255,255,255,0.75);
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  /* DATE BANNER */
+  .date-banner {
+    background: var(--naranja);
+    color: #fff;
+    text-align: center;
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  /* FORM SECTION */
+  .form-section {
+    background: #fff;
+    margin: 16px 14px;
+    border-radius: 16px;
+    padding: 18px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    border-left: 4px solid var(--verde);
+  }
+
+  .form-section h2 {
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--verde);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+  }
+
+  .form-row {
+    margin-bottom: 10px;
+  }
+
+  .form-row label {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 4px;
+  }
+
+  .form-row input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid #e0e0e0;
+    border-radius: 10px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--texto);
+    background: var(--crema);
+    transition: border-color 0.2s;
+    outline: none;
+  }
+
+  .form-row input:focus {
+    border-color: var(--verde);
+    background: #fff;
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  /* SECTION TITLE */
+  .section-title {
+    padding: 6px 14px 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .section-title span {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    color: var(--verde);
+    letter-spacing: 1px;
+  }
+
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 2px;
+    background: var(--verde-claro);
+    border-radius: 2px;
+  }
+
+  /* PRODUCT CARDS */
+  .products {
+    padding: 0 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .card {
+    background: #fff;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 2px 14px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.15s;
+    animation: fadeUp 0.4s ease both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .card:nth-child(1) { animation-delay: 0.05s; }
+  .card:nth-child(2) { animation-delay: 0.10s; }
+  .card:nth-child(3) { animation-delay: 0.15s; }
+  .card:nth-child(4) { animation-delay: 0.20s; }
+  .card:nth-child(5) { animation-delay: 0.25s; }
+  .card:nth-child(6) { animation-delay: 0.30s; }
+  .card:nth-child(7) { animation-delay: 0.35s; }
+  .card:nth-child(8) { animation-delay: 0.40s; }
+
+  .card-img {
+    width: 100%;
+    height: 170px;
+    object-fit: cover;
+    background: var(--gris);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 60px;
+    position: relative;
+  }
+
+  .card-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Placeholder cuando no hay imagen */
+  .img-placeholder {
+    width: 100%;
+    height: 170px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 52px;
+    position: relative;
+  }
+
+  .img-placeholder .img-hint {
+    font-size: 11px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    color: rgba(255,255,255,0.7);
+    margin-top: 6px;
+    letter-spacing: 0.5px;
+  }
+
+  .img-placeholder.mayo   { background: linear-gradient(135deg, #e8f5e9, #c8e6c9); color: #2e7d32; }
+  .img-placeholder.mostaza { background: linear-gradient(135deg, #fff9c4, #f9e07a); color: #f57f17; }
+  .img-placeholder.ketchup { background: linear-gradient(135deg, #ffebee, #ef9a9a); color: #b71c1c; }
+  .img-placeholder.papas   { background: linear-gradient(135deg, #fff3e0, #ffcc80); color: #e65100; }
+  .img-placeholder.salsa   { background: linear-gradient(135deg, #f3e5f5, #ce93d8); color: #6a1b9a; }
+  .img-placeholder.mani    { background: linear-gradient(135deg, #fbe9e7, #ffab91); color: #bf360c; }
+
+  .num-badge {
+    position: absolute;
+    top: 10px; left: 10px;
+    background: var(--verde);
+    color: #fff;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 16px;
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+  }
+
+  .oferta-badge {
+    position: absolute;
+    top: 10px; right: 10px;
+    background: var(--naranja);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    text-transform: uppercase;
+  }
+
+  .card-body {
+    padding: 14px 16px 16px;
+  }
+
+  .card-body h3 {
+    font-size: 16px;
+    font-weight: 900;
+    color: var(--texto);
+    line-height: 1.2;
+    margin-bottom: 4px;
+  }
+
+  .card-pres {
+    font-size: 12px;
+    font-weight: 600;
+    color: #888;
+    margin-bottom: 12px;
+  }
+
+  .card-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .price {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .price-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: #aaa;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+  }
+
+  .price-val {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 30px;
+    color: var(--verde);
+    line-height: 1;
+    letter-spacing: 1px;
+  }
+
+  .price-val span {
+    font-size: 18px;
+  }
+
+  /* CANTIDAD */
+  .qty-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+  }
+
+  .qty-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: #aaa;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+  }
+
+  .qty-control {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    border: 2px solid var(--amarillo);
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--naranja-claro);
+  }
+
+  .qty-btn {
+    width: 36px; height: 36px;
+    background: var(--amarillo);
+    border: none;
+    font-size: 20px;
+    font-weight: 900;
+    color: var(--verde);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.15s;
+    line-height: 1;
+  }
+
+  .qty-btn:active { background: #f0a800; }
+
+  .qty-input {
+    width: 44px;
+    text-align: center;
+    border: none;
+    background: transparent;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    color: var(--texto);
+    outline: none;
+    padding: 0 4px;
+  }
+
+  /* TOTAL CARD */
+  .total-section {
+    margin: 20px 14px;
+    background: var(--verde);
+    border-radius: 18px;
+    padding: 20px;
+    color: #fff;
+    box-shadow: 0 4px 20px rgba(26,107,47,0.35);
+  }
+
+  .total-section h3 {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    opacity: 0.8;
+    margin-bottom: 6px;
+  }
+
+  .total-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 50px;
+    line-height: 1;
+    letter-spacing: 2px;
+    color: var(--amarillo);
+  }
+
+  .total-num span { font-size: 30px; }
+
+  .total-sub {
+    font-size: 12px;
+    opacity: 0.7;
+    margin-top: 6px;
+  }
+
+  /* SEND BUTTON */
+  .send-btn {
+    display: block;
+    width: calc(100% - 28px);
+    margin: 0 14px 10px;
+    background: #25D366;
+    color: #fff;
+    border: none;
+    border-radius: 14px;
+    padding: 16px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 16px;
+    font-weight: 800;
+    cursor: pointer;
+    text-align: center;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 16px rgba(37,211,102,0.4);
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+
+  .send-btn:active {
+    transform: scale(0.97);
+    box-shadow: 0 2px 8px rgba(37,211,102,0.3);
+  }
+
+  /* FOOTER */
+  .footer {
+    text-align: center;
+    padding: 16px 20px 30px;
+    font-size: 12px;
+    color: #aaa;
+    font-weight: 600;
+  }
+
+  .footer strong { color: var(--verde); }
+
+  /* INSTRUCCION */
+  .instruccion {
+    background: var(--naranja-claro);
+    border-left: 4px solid var(--naranja);
+    margin: 0 14px 16px;
+    padding: 12px 14px;
+    border-radius: 0 12px 12px 0;
+    font-size: 13px;
+    font-weight: 700;
+    color: #7f3800;
+    line-height: 1.4;
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-inner">
+    <div class="badge">🔥 Oferta Limitada</div>
+    <h1>OFERTAS<br><span>ESPECIALES</span></h1>
+    <div class="header-sub">Precios mayoristas · IVA incluido</div>
+  </div>
+  <div class="date-banner">
+    📅 &nbsp;23 FEB — 28 FEB 2026 &nbsp;·&nbsp; o hasta agotar stock
+  </div>
+</div>
+
+<!-- FORM -->
+<div class="form-section">
+  <h2>📋 Tus datos para el pedido</h2>
+  <div class="form-row">
+    <label>Apellido y Nombre</label>
+    <input type="text" id="nombre" placeholder="Ej: García, Juan">
+  </div>
+  <div class="form-row">
+    <label>Dirección de entrega</label>
+    <input type="text" id="direccion" placeholder="Calle, número, localidad">
+  </div>
+  <div class="form-grid">
+    <div class="form-row">
+      <label>Teléfono</label>
+      <input type="tel" id="telefono" placeholder="Ej: 351-1234567">
+    </div>
+    <div class="form-row">
+      <label>Fecha</label>
+      <input type="text" id="fecha" value="23/02/2026" readonly style="background:#f0f0f0; color:#888;">
+    </div>
+  </div>
+</div>
+
+<!-- INSTRUCCION -->
+<div class="instruccion">
+  👆 Elegí la cantidad de cada producto y tocá <strong>Enviar Pedido</strong> al final
+</div>
+
+<!-- PRODUCTS -->
+<div class="section-title">
+  <span>PRODUCTOS EN OFERTA</span>
+</div>
+
+<div class="products" id="products">
+
+  <!-- 1 -->
+  <div class="card">
+    <div class="img-placeholder mayo">
+      🥛
+      <span class="img-hint">MAYONESA</span>
+      <div class="num-badge">1</div>
+      <div class="oferta-badge">OFERTA</div>
+    </div>
+    <div class="card-body">
+      <h3>MAYONESA NATURA X 125 GRS.</h3>
+      <div class="card-pres">📦 Caja x 12 Uds.</div>
+      <div class="card-bottom">
+        <div class="price">
+          <span class="price-label">Precio unit. c/IVA</span>
+          <span class="price-val"><span>$</span>487</span>
+        </div>
+        <div class="qty-wrap">
+          <span class="qty-label">Cantidad</span>
+          <div class="qty-control">
+            <button class="qty-btn" onclick="cambiar(this,-1)">−</button>
+            <input class="qty-input" type="number" value="0" min="0" data-precio="487.24" onchange="actualizarTotal()">
+            <button class="qty-btn" onclick="cambiar(this,1)">+</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2 -->
+  <div class="card">
+    <div class="img-placeholder mayo">
+      🥛
+      <span class="img-hint">MAYONESA</span>
+      <div class="num-badge">2</div>
+      <div class="oferta-badge">OFERTA</div>
+    </div>
+    <div class="card-body">
+      <h3>MAYONESA NATURA X 250 GRS.</h3>
+      <div class="card-pres">📦 Caja x 12 Uds.</div>
+      <div class="card-bottom">
+        <div class="price">
+          <span class="price-label">Precio unit. c/IVA</span>
+          <span class="price-val"><span>$</span>1.135</span>
+        </div>
+        <div class="qty-wrap">
+          <span class="qty-label">Cantidad</span>
+          <div class="qty-control">
+            <button class="qty-btn" onclick="cambiar(this,-1)">−</button>
+            <input class="qty-input" type="number" value="0" min="0" data-precio="1135.68" onchange="actualizarTotal()">
+            <button class="qty-btn" onclick="cambiar(this,1)">+</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3 -->
+  <div class="card">
+    <div class="img-placeholder mostaza">
+      🌿
+      <span class="img-hint">MOSTAZA</span>
+      <div class="num-badge">3</div>
+      <div class="oferta-badge">OFERTA</div>
+    </div>
+    <div class="card-body">
+      <h3>MOSTAZA NATURA X 250 GRS.</h3>
+      <div class="card-pres">📦 Caja x 12 Uds.</div>
+      <div class="card-bottom">
+        <div class="price">
+          <span class="price-label">Precio unit. c/IVA</span>
+          <span class="price-val"><span>$</span>738</span>
+        </div>
+        <div class="qty-wrap">
+          <span class="qty-label">Cantidad</span>
+          <div class="qty-control">
+            <button class="qty-btn" onclick="cambiar(this,-1)">−</button>
+            <input class="qty-input" type="number" value="0" min="0" data-precio="738.68" onchange="actualizarTotal()">
+            <button class="qty-btn" onclick="cambiar(this,1)">+</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4 -->
+  <div class="card">
+    <div class="img-placeholder ketchup">
+      🍅
+      <span class="img-hint">KETCHUP</span>
+      <div class="num-badge">4</div>
+      <div class="oferta-badge">OFERTA</div>
+    </div>
+    <div class="card-body">
+      <h3>KETCHUP NATURA X 250 GRS.</h3>
+      <div class="card-pres">📦 Caja x 12 Uds.</div>
+      <div class="card-bottom">
+        <div class="price">
+          <span class="price-label">Precio unit. c/IVA</span>
+          <span class="price-val"><span>$</span>1.214</span>
+        </div>
+        <div class="qty-wrap">
+          <span class="qty-label">Cantidad</span>
+          <div class="qty-control">
+            <button class="qty-btn" onclick="cambiar(this,-1)">−</button>
+            <input class="qty-input" type="number" value="0" min="0" data-precio="1214" onchange="actualizarTotal()">
+            <button class="qty-btn" onclick="cambiar(this,1)">+</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5 -->
+  <div class="card">
+    <div class="img-placeholder papas">
+      🥔
+      <span class="img-hint">PAPAS FRITAS</span>
+      <div class="num-badge">5</div>
+      <div class="oferta-badge">OFERTA</div>
+    </div>
+    <div class="card-body">
+      <h3>PAPAS FRITAS KETCHUP BARBACOA NIKITOS X 65G</h3>
+      <div class="card-pres">🛍️ Unidad</div>
+      <div class="card-bottom">
+        <div class="price">
+          <span class="price-label">Precio unit. c/IVA</span>
+          <span class="price-val"><span>$</span>932</span>
+        </div>
+        <div class="qty-wrap">
+          <span class="qty-label">Cantidad</span>
+          <div class="qty-control">
+            <button class="qty-btn" onclick="cambiar(this,-1)">−</button>
+            <input class="qty-input" type="number" value="0" min="0" data-precio="932" onchange="actualizarTotal()">
+            <button class="qty-btn" onclick="cambiar(this,1)">+</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6 -->
+  <div class="card">
+    <div class="img-placeholder salsa">
+      ⚽
+      <span class="img-hint">SALSA GOL</span>
+      <div class="num-badge">6</div>
+      <div class="oferta-badge">OFERTA</div>
+    </div>
+    <div class="card-body">
+      <h3>SALSA GOL NATURA X 250 GRS.</h3>
+      <div class="card-pres">📦 Caja x 12 Uds.</div>
+      <div class="card-bottom">
+        <div class="price">
+          <span class="price-label">Precio unit. c/IVA</span>
+          <span class="price-val"><span>$</span>1.277</span>
+        </div>
+        <div class="qty-wrap">
+          <span class="qty-label">Cantidad</span>
+          <div class="qty-control">
+            <button class="qty-btn" onclick="cambiar(this,-1)">−</button>
+            <input class="qty-input" type="number" value="0" min="0" data-precio="1277" onchange="actualizarTotal()">
+            <button class="qty-btn" onclick="cambiar(this,1)">+</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7 -->
+  <div class="card">
+    <div class="img-placeholder mani">
+      🥜
+      <span class="img-hint">MANÍ CHEDDAR</span>
+      <div class="num-badge">7</div>
+      <div class="oferta-badge">OFERTA</div>
+    </div>
+    <div class="card-body">
+      <h3>MANÍ CROCANTE TERRANEA CHEDDAR X 200G</h3>
+      <div class="card-pres">📦 Caja x 12 Uds.</div>
+      <div class="card-bottom">
+        <div class="price">
+          <span class="price-label">Precio unit. c/IVA</span>
+          <span class="price-val"><span>$</span>999</span>
+        </div>
+        <div class="qty-wrap">
+          <span class="qty-label">Cantidad</span>
+          <div class="qty-control">
+            <button class="qty-btn" onclick="cambiar(this,-1)">−</button>
+            <input class="qty-input" type="number" value="0" min="0" data-precio="999" onchange="actualizarTotal()">
+            <button class="qty-btn" onclick="cambiar(this,1)">+</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 8 -->
+  <div class="card">
+    <div class="img-placeholder mani">
+      🥜
+      <span class="img-hint">MANÍ JAMÓN</span>
+      <div class="num-badge">8</div>
+      <div class="oferta-badge">OFERTA</div>
+    </div>
+    <div class="card-body">
+      <h3>MANÍ CROCANTE TERRANEA JAMÓN X 200G</h3>
+      <div class="card-pres">📦 Caja x 12 Uds.</div>
+      <div class="card-bottom">
+        <div class="price">
+          <span class="price-label">Precio unit. c/IVA</span>
+          <span class="price-val"><span>$</span>999</span>
+        </div>
+        <div class="qty-wrap">
+          <span class="qty-label">Cantidad</span>
+          <div class="qty-control">
+            <button class="qty-btn" onclick="cambiar(this,-1)">−</button>
+            <input class="qty-input" type="number" value="0" min="0" data-precio="999" onchange="actualizarTotal()">
+            <button class="qty-btn" onclick="cambiar(this,1)">+</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /products -->
+
+<!-- TOTAL -->
+<div class="total-section">
+  <h3>💰 Total de tu pedido</h3>
+  <div class="total-num" id="totalDisplay"><span>$</span>0</div>
+  <div class="total-sub">IVA incluido · Precios sujetos a stock disponible</div>
+</div>
+
+<!-- BOTON ENVIAR -->
+<button class="send-btn" onclick="enviarPedido()">
+  📲 &nbsp;Enviar Pedido por WhatsApp
+</button>
+
+<div class="footer">
+  <strong>Ofertas válidas hasta el 28/02/2026</strong><br>
+  Precios mayoristas · Sujeto a disponibilidad de stock
+</div>
+
+<script>
+  function cambiar(btn, delta) {
+    const input = btn.parentElement.querySelector('.qty-input');
+    const val = parseInt(input.value) || 0;
+    input.value = Math.max(0, val + delta);
+    actualizarTotal();
+  }
+
+  function actualizarTotal() {
+    const inputs = document.querySelectorAll('.qty-input');
+    let total = 0;
+    inputs.forEach(inp => {
+      const qty = parseInt(inp.value) || 0;
+      const precio = parseFloat(inp.dataset.precio) || 0;
+      total += qty * precio;
+    });
+    const formatted = Math.round(total).toLocaleString('es-AR');
+    document.getElementById('totalDisplay').innerHTML = '<span>$</span>' + formatted;
+  }
+
+  function enviarPedido() {
+    const nombre = document.getElementById('nombre').value.trim();
+    const direccion = document.getElementById('direccion').value.trim();
+    const telefono = document.getElementById('telefono').value.trim();
+
+    if (!nombre) { alert('Por favor ingresá tu nombre para continuar.'); return; }
+
+    const productos = [
+      'MAYONESA NATURA 125g',
+      'MAYONESA NATURA 250g',
+      'MOSTAZA NATURA 250g',
+      'KETCHUP NATURA 250g',
+      'PAPAS NIKITOS KETCHUP/BARBACOA 65g',
+      'SALSA GOL NATURA 250g',
+      'MANÍ CROCANTE CHEDDAR 200g',
+      'MANÍ CROCANTE JAMÓN 200g'
+    ];
+    const precios = [487.24, 1135.68, 738.68, 1214, 932, 1277, 999, 999];
+    const inputs = document.querySelectorAll('.qty-input');
+
+    let lineas = [];
+    let total = 0;
+    inputs.forEach((inp, i) => {
+      const qty = parseInt(inp.value) || 0;
+      if (qty > 0) {
+        const sub = qty * precios[i];
+        total += sub;
+        lineas.push(`• ${productos[i]} x${qty} = $${Math.round(sub).toLocaleString('es-AR')}`);
+      }
+    });
+
+    if (lineas.length === 0) { alert('Seleccioná al menos un producto para hacer el pedido.'); return; }
+
+    let msg = `🛒 *PEDIDO - OFERTAS ESPECIALES*\n`;
+    msg += `📅 23/02/2026 al 28/02/2026\n\n`;
+    msg += `👤 *Nombre:* ${nombre}\n`;
+    if (direccion) msg += `📍 *Entrega:* ${direccion}\n`;
+    if (telefono) msg += `📞 *Tel:* ${telefono}\n`;
+    msg += `\n*DETALLE DEL PEDIDO:*\n`;
+    msg += lineas.join('\n');
+    msg += `\n\n💰 *TOTAL: $${Math.round(total).toLocaleString('es-AR')}* (IVA incl.)`;
+
+    const encoded = encodeURIComponent(msg);
+    window.open(`https://wa.me/?text=${encoded}`, '_blank');
+  }
+</script>
+</body>
+</html>
